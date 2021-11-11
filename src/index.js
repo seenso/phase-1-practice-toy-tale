@@ -1,112 +1,103 @@
 let addToy = false;
 const url = "http://localhost:3000/toys";
 const toyContainer = document.querySelector("#toy-collection");
+const toyForm = document.querySelector("body > div.container > form");
+let newToy = {};
+// const likeBttn = document.querySelector("");
 
-document.addEventListener("DOMContentLoaded", () => {
-  const addBtn = document.querySelector("#new-toy-btn");
-  const toyFormContainer = document.querySelector(".container");
-  addBtn.addEventListener("click", () => {
-    // hide & seek with the form
-    addToy = !addToy;
-    if (addToy) {
-      toyFormContainer.style.display = "block";
-    } else {
-      toyFormContainer.style.display = "none";
-    }
+const addBtn = document.querySelector("#new-toy-btn");
+const toyFormContainer = document.querySelector(".container");
+addBtn.addEventListener("click", (e) => {
+  e.preventDefault();
+  // hide & seek with the form
+  addToy = !addToy;
+  if (addToy) {
+    toyFormContainer.style.display = "block";
+  } else {
+    toyFormContainer.style.display = "none";
+  }
+});
+
+///////////////////////// HELPER FUNCTIONS BELOW /////////////////////////
+function renderToyCards(toysArray) {
+  toysArray.forEach(toy => {
+    let toyCard = document.createElement("div");
+    toyCard.className = "card"
+    toyCard.innerHTML = `
+      <h2>${toy.name}</h2>
+      <img src="${toy.image}" class="toy-avatar" />
+      <p>${toy.likes} Likes </p>
+      <button class="like-btn" id="${toy.id}">Like <3</button>
+    `;
+    toyContainer.append(toyCard);
   });
+}
+
+//Add new Toy Card
+function addToyCard() {
+  console.log("addToyCard was invoked")
+  // e.preventDefault();
+
+  fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json"
+    },
+    body: JSON.stringify(newToy)
+  })
+  .then(res => res.json())
+  .then(toy => {
+    console.log("SUCCESS! added", toy);
+  })
+  .catch(error => console.log('ERROR!', error));
+}
+
+//Update Likes
+// function updateLikes(toyId) {
+//   fetch(url+`/${toyId}`, {
+//     Method: "PATCH",
+//     headers: {
+//       "Content-Type": "application/json",
+//       Accept: "application/json"
+//     },
+//     body: JSON.stringify(toy.likes)
+//   })
+//   .then(res => res.json())
+//   .then(data => {
+//     console.log("PATCH REQUEST", data);
+//   });
+// }
+
+///////////////////////// HELPER FUNCTIONS ABOVE /////////////////////////
 
   //GET request
-  fetch(url)
-  .then(res => res.json())
-  .then(toysArray => { //data = arr of objs with keys: id, image, likes, name
-    toysArray.forEach(toy => {
-      toyContainer.innerHTML += `
-        <div class="card">
-        <h2>${toy.name}</h2>
-        <img src="${toy.image}" class="toy-avatar" />
-        <p>${toy.likes} Likes </p>
-        <button class="like-btn" id="${toy.id}">Like <3</button>
-        </div>
-      `;
+  function renderCards() {
+    fetch(url)
+    .then(res => res.json())
+    .then(toysArray => { //toysArray = arr of objs with keys: id, image, likes, name
+      renderToyCards(toysArray);
     });
-
-  });
+  }
 
   //POST request
-  // fetch(url)
-  // .then(res => res.json())
-  // .then();
+  toyForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    newToy["name"] = e.target.name.value;
+    newToy["image"] = e.target.image.value;
+    newToy["likes"] = 0;
+    addToyCard();
+    renderCards();
+  });
 
 
   //PATCH request
-  // fetch(url)
-  // .then(res => res.json())
-  // .then();
+  // likeBttn.addEventListener("click", updateLikes(likeBttn.id))
 
 
 
 
 
 
-
-});
-
-
-
-
-
-
-/*
-
-
-//MINE
-const submitData = (userName, userEmail) => {
-  //TEST 1 - Send Data
-  return fetch(“http://localhost:3000/users”, {
-    method: “POST”,
-    headers: {
-      ‘Content-Type’: “application/json”,
-      Accept: “application/json”
-    },
-    body: JSON.stringify({
-      name: userName,
-      email: userEmail
-    })
-  })
-  //TEST 2 - Handle the Response
-  .then(response => response.json())
-  .then(data => {
-    // data = { id: 132, name: ‘Sam’, email: ‘sam@sam.com’ }
-    //append id to DOM
-    document.body.append(data.id);
-  })
-  //TEST 3 - Handle Errors
-  .catch((err) => {
-    document.body.append(err.message);
-  });
-};
-
-
-//NOAs
-function submitData(userName, userEmail) {
-  const userNameAndEmail = { name: userName, email: userEmail };
-  const configurationObject = {
-    method: “POST”,
-    headers: {
-      “Content-Type”: “application/json”,
-      Accept: “application/json”,
-    },
-    body: JSON.stringify(userNameAndEmail),
-  };
-
-   fetch(“http://localhost:3000/users”, configurationObject)
-    .then(resp => resp.json())
-    .then((userNameAndEmail) => document.body.append(userNameAndEmail.id))
-    .catch(error => document.body.append(error.message));
-
-}
-
-
-
-
-*/
+//initialize functions
+  renderCards()
