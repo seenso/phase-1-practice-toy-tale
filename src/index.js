@@ -79,6 +79,7 @@ function addToyCard() {
   .then(res => res.json())
   .then(toy => {
     console.log("SUCCESS! added", toy);
+    renderCards();
   })
   .catch(error => console.log('ERROR!', error));
 }
