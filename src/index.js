@@ -3,7 +3,6 @@ const url = "http://localhost:3000/toys";
 const toyContainer = document.querySelector("#toy-collection");
 const toyForm = document.querySelector("body > div.container > form");
 let newToy = {};
-// const likeBttn = document.querySelector("");
 
 const addBtn = document.querySelector("#new-toy-btn");
 const toyFormContainer = document.querySelector(".container");
@@ -21,22 +20,35 @@ addBtn.addEventListener("click", (e) => {
 ///////////////////////// HELPER FUNCTIONS BELOW /////////////////////////
 function renderToyCards(toysArray) {
   toysArray.forEach(toy => {
+    // console.log("TOY", toy);
     let toyCard = document.createElement("div");
-    toyCard.className = "card"
-    toyCard.innerHTML = `
-      <h2>${toy.name}</h2>
-      <img src="${toy.image}" class="toy-avatar" />
-      <p>${toy.likes} Likes </p>
-      <button class="like-btn" id="${toy.id}">Like <3</button>
-    `;
+      toyCard.className = "card";
+    let toyName = document.createElement("h2");
+      toyName.innerText = toy.name;
+    let toyImg = document.createElement("img");
+      toyImg.src = toy.image;
+      toyImg.className = "toy-avatar";
+    let toyLikes = document.createElement("p");
+      toyLikes.innerText = `${toy.likes} Likes`;
+    let toyBtn =  document.createElement("button");
+      toyBtn.className = "like-btn";
+      toyBtn.id = toy.id;
+      toyBtn.innerText = "Like <3";
+
+    toyCard.append(toyName, toyImg, toyLikes, toyBtn);
     toyContainer.append(toyCard);
+    
+    //add eventlistener for the like button
+    toyBtn.addEventListener("click", () => {
+      toy.likes++;
+      console.log("LIKE FOR", toy.name, toy.likes)
+    });
   });
 }
 
 //Add new Toy Card
 function addToyCard() {
   console.log("addToyCard was invoked")
-  // e.preventDefault();
 
   fetch(url, {
     method: "POST",
@@ -89,10 +101,6 @@ function addToyCard() {
     addToyCard();
     renderCards();
   });
-
-
-  //PATCH request
-  // likeBttn.addEventListener("click", updateLikes(likeBttn.id))
 
 
 
