@@ -4,6 +4,7 @@ const toyContainer = document.querySelector("#toy-collection");
 const toyForm = document.querySelector("body > div.container > form");
 let newToy = {};
 
+//BELOW part of original file
 const addBtn = document.querySelector("#new-toy-btn");
 const toyFormContainer = document.querySelector(".container");
 addBtn.addEventListener("click", (e) => {
@@ -16,8 +17,8 @@ addBtn.addEventListener("click", (e) => {
     toyFormContainer.style.display = "none";
   }
 });
+// ABOVE part of original file
 
-///////////////////////// HELPER FUNCTIONS BELOW /////////////////////////
 function renderToyCards(toysArray) {
   toysArray.forEach(toy => {
     // console.log("TOY", toy);
@@ -41,8 +42,25 @@ function renderToyCards(toysArray) {
     //add eventlistener for the like button
     toyBtn.addEventListener("click", () => {
       toy.likes++;
-      console.log("LIKE FOR", toy.name, toy.likes)
+      toyLikes.innerText = `${toy.likes} Likes`;
+      updateLikes(toy);
     });
+  });
+}
+
+//Update Likes
+function updateLikes(toy) {
+  fetch(url+`/${toy.id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(toy)
+  })
+  .then(res => res.json())
+  .then(data => {
+    console.log("PATCH REQUEST in updateLikes()", data);
+    console.log("LIKE FOR", toy)
   });
 }
 
@@ -65,21 +83,6 @@ function addToyCard() {
   .catch(error => console.log('ERROR!', error));
 }
 
-//Update Likes
-// function updateLikes(toyId) {
-//   fetch(url+`/${toyId}`, {
-//     Method: "PATCH",
-//     headers: {
-//       "Content-Type": "application/json",
-//       Accept: "application/json"
-//     },
-//     body: JSON.stringify(toy.likes)
-//   })
-//   .then(res => res.json())
-//   .then(data => {
-//     console.log("PATCH REQUEST", data);
-//   });
-// }
 
 ///////////////////////// HELPER FUNCTIONS ABOVE /////////////////////////
 
@@ -92,7 +95,7 @@ function addToyCard() {
     });
   }
 
-  //POST request
+  //add Toy
   toyForm.addEventListener("submit", (e) => {
     e.preventDefault();
     newToy["name"] = e.target.name.value;
